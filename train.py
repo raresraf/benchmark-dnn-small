@@ -11,7 +11,7 @@ from torch.nn import CrossEntropyLoss
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-from models.resnet_cifar10 import SmallerResNet18, ResNet18, ResNet34, ResNet50, ResNet101, ResNet152
+from models.resnet import SmallerResNet18, ResNet18, ResNet34, ResNet50, ResNet101, ResNet152
 from optimizers import parse_optimizer, supported_optimizers
 
 

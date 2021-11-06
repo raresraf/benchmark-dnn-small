@@ -149,6 +149,7 @@ def ResNet152():
     return ResNet(Bottleneck, [3, 8, 36, 3])
 
 def SmallerResNet18():
-#print(summary(SmallerResNet18(), (3, 32, 32)))
     return SmallerResNet(BasicBlock, [2, 2, 2, 2])
+
+# print(summary(SmallerResNet18(), (3, 32, 32)))
 
