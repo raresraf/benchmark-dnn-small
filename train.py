@@ -11,9 +11,14 @@ from torch.nn import CrossEntropyLoss
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
+import ssl
+
+ssl._create_default_https_context = ssl._create_unverified_context
+
 from models.resnet import SmallerResNet18, ResNet18, ResNet34, ResNet50, ResNet101, ResNet152
 from models.vgg import VGG16
 from optimizers import parse_optimizer, supported_optimizers
+from sklearn.metrics import classification_report
 
 
 def parse_args(argv=None):
@@ -76,6 +81,8 @@ def build_model(model, device):
 
 def test(net, device, data_loader):
     net.eval()
+    y_test = np.array([])
+    y_pred = np.array([])
     correct = 0
     total = 0
     with torch.no_grad():
@@ -86,7 +93,12 @@ def test(net, device, data_loader):
             _, predicted = outputs.max(1)
             total += targets.size(0)
             correct += predicted.eq(targets).sum().item()
+            y_test = np.append(y_test, targets.cpu())
+            y_pred = np.append(y_pred, predicted.cpu())
 
+    print(classification_report(y_test, y_pred,
+                                target_names=['plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship',
+                                              'truck']))
     accuracy = 100. * correct / total
     print('Test acc %.3f' % accuracy)
 
@@ -134,7 +146,8 @@ def train_cifar10(opt, optimizer_opts):
     optimizer, optimizer_run_name = parse_optimizer(opt.optim, optimizer_opts, net.parameters())
     scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[100, 150], gamma=0.1)
 
-    run_name = 'cifar10_{}'.format(
+    run_name = '{}_cifar10_{}'.format(
+        opt.model,
         optimizer_run_name
     )
 
