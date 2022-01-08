@@ -60,12 +60,45 @@ def make_layers(cfg, batch_norm=False):
     return nn.Sequential(*layers)
 
 
+class VGG_S(nn.Module):
+    '''
+    VGG small model
+    '''
+    def __init__(self, features):
+        super(VGG_S, self).__init__()
+        self.features = features
+        self.classifier = nn.Sequential(
+            nn.Dropout(),
+            nn.Linear(128, 128),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(128, 128),
+            nn.ReLU(True),
+            nn.Linear(128, 10),
+        )
+        # Initialize weights
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                n = m.kernel_size[0] * m.kernel_size[1] * m.out_channels
+                m.weight.data.normal_(0, math.sqrt(2. / n))
+                m.bias.data.zero_()
+
+
+    def forward(self, x):
+        x = self.features(x)
+        x = x.view(x.size(0), -1)
+        x = self.classifier(x)
+        return x
+
+
+
 cfg = {
     'A': [64, 'M', 128, 'M', 256, 256, 'M', 512, 512, 'M', 512, 512, 'M'],
     'B': [64, 64, 'M', 128, 128, 'M', 256, 256, 'M', 512, 512, 'M', 512, 512, 'M'],
     'D': [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 'M', 512, 512, 512, 'M', 512, 512, 512, 'M'],
     'E': [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 256, 'M', 512, 512, 512, 512, 'M',
           512, 512, 512, 512, 'M'],
+    'S': [16, 16, 'M', 32, 32, 'M', 64, 64, 64, 'M', 128, 128, 128, 'M', 128, 128, 128, 'M'],
 }
 
 
@@ -94,6 +127,11 @@ def VGG16():
     return VGG(make_layers(cfg['D']))
 
 
+def VGG16_S():
+    """VGG 16-layer model SMALL (configuration "S")"""
+    return VGG_S(make_layers(cfg['S']))
+
+
 def vgg16_bn():
     """VGG 16-layer model (configuration "D") with batch normalization"""
     return VGG(make_layers(cfg['D'], batch_norm=True))
@@ -109,4 +147,4 @@ def vgg19_bn():
     return VGG(make_layers(cfg['E'], batch_norm=True))
 
 
-# print(summary(VGG16(), (3, 32, 32)))
+print(summary(VGG16_S().to(device='cuda'), (3, 32, 32)))

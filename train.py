@@ -16,7 +16,7 @@ import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
 
 from models.resnet import SmallerResNet18, ResNet18, ResNet34, ResNet50, ResNet101, ResNet152
-from models.vgg import VGG16
+from models.vgg import VGG16, VGG16_S
 from optimizers import parse_optimizer, supported_optimizers
 from sklearn.metrics import classification_report
 
@@ -25,7 +25,7 @@ def parse_args(argv=None):
     """Parse command line arguments"""
     parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
     parser.add_argument('--model', default='resnet18', type=str, help='model',
-                        choices=['resnet18', 'resnet18_s', 'vgg16'])
+                        choices=['resnet18', 'resnet18_s', 'vgg16', 'vgg16_s'])
     parser.add_argument('--optim', type=str, help='optimizer', required=True,
                         choices=supported_optimizers())
     parser.add_argument('--seed', type=int, default=42, help='Random seed to use. default=123.')
@@ -52,7 +52,7 @@ def build_dataset():
 
     trainset = torchvision.datasets.CIFAR10(root='./data', train=True, download=True,
                                             transform=transform_train)
-    train_loader = DataLoader(trainset, batch_size=16, shuffle=True, num_workers=4)
+    train_loader = DataLoader(trainset, batch_size=8, shuffle=True, num_workers=4)
 
     testset = torchvision.datasets.CIFAR10(root='./data', train=False, download=True,
                                            transform=transform_test)
@@ -67,6 +67,7 @@ def build_model(model, device):
         'resnet18': ResNet18,
         'resnet18_s': SmallerResNet18,
         'vgg16': VGG16,
+        'vgg16_s': VGG16_S,
 
     }[model]()
     net = net.to(device)
