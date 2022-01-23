@@ -15,16 +15,16 @@ import ssl
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
-from models.resnet import SmallerResNet18, ResNet18, ResNet34, ResNet50, ResNet101, ResNet152
-from models.vgg import VGG16, VGG16_S
-from models.vit import VIT_S
+from models100.resnet import SmallerResNet18, ResNet18, ResNet34, ResNet50, ResNet101, ResNet152
+from models100.vgg import VGG16, VGG16_S
+from models100.vit import VIT_S
 from optimizers import parse_optimizer, supported_optimizers
 from sklearn.metrics import classification_report
 
 
 def parse_args(argv=None):
     """Parse command line arguments"""
-    parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
+    parser = argparse.ArgumentParser(description='PyTorch CIFAR100 Training')
     parser.add_argument('--model', default='resnet18', type=str, help='model',
                         choices=['resnet18', 'resnet18_s', 'vgg16', 'vgg16_s', 'vit_s'])
     parser.add_argument('--optim', type=str, help='optimizer', required=True,
@@ -38,7 +38,7 @@ def parse_args(argv=None):
 
 
 def build_dataset():
-    """Build CIFAR10 train and test data loaders. Will download datasets if needed."""
+    """Build CIFAR100 train and test data loaders. Will download datasets if needed."""
     transform_train = transforms.Compose([
         transforms.RandomCrop(32, padding=4),
         transforms.RandomHorizontalFlip(),
@@ -51,15 +51,15 @@ def build_dataset():
         transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
     ])
 
-    trainset = torchvision.datasets.CIFAR10(root='./data', train=True, download=True,
+    trainset = torchvision.datasets.CIFAR100(root='./data', train=True, download=True,
                                             transform=transform_train)
     train_loader = DataLoader(trainset, batch_size=8, shuffle=True, num_workers=4)
 
-    testset = torchvision.datasets.CIFAR10(root='./data', train=False, download=True,
+    testset = torchvision.datasets.CIFAR100(root='./data', train=False, download=True,
                                            transform=transform_test)
     test_loader = DataLoader(testset, batch_size=8, shuffle=False, num_workers=4)
 
-    # classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
+    # classes = (n1.. n100)
     return train_loader, test_loader
 
 
@@ -100,8 +100,7 @@ def test(net, device, data_loader):
             y_pred = np.append(y_pred, predicted.cpu())
 
     print(classification_report(y_test, y_pred,
-                                target_names=['plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship',
-                                              'truck']))
+                                target_names=[f"n{i}" for i in range(100)]))
     accuracy = 100. * correct / total
     print('Test acc %.3f' % accuracy)
 
@@ -134,7 +133,7 @@ def train_epoch(net, epoch, device, data_loader, optimizer, criterion):
     return accuracy, train_loss
 
 
-def train_cifar10(opt, optimizer_opts):
+def train_cifar100(opt, optimizer_opts):
     np.random.seed(opt.seed)
     torch.manual_seed(opt.seed)
 
@@ -149,7 +148,7 @@ def train_cifar10(opt, optimizer_opts):
     optimizer, optimizer_run_name = parse_optimizer(opt.optim, optimizer_opts, net.parameters())
     scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[100, 150], gamma=0.1)
 
-    run_name = '{}_cifar10_{}'.format(
+    run_name = '{}_cifar100_{}'.format(
         opt.model,
         optimizer_run_name
     )
@@ -187,4 +186,4 @@ def train_cifar10(opt, optimizer_opts):
 
 
 if __name__ == '__main__':
-    train_cifar10(*parse_args())
+    train_cifar100(*parse_args())

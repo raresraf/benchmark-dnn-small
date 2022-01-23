@@ -1,7 +1,7 @@
 """
 .. Deep Residual Learning for Image Recognition:
     https://arxiv.org/abs/1512.03385
-    These models are modified for CIFAR10
+    These models are modified for CIFAR100
 """
 import torch.nn as nn
 import torch.nn.functional as F
@@ -66,7 +66,7 @@ class Bottleneck(nn.Module):
 
 
 class SmallerResNet(nn.Module):
-    def __init__(self, block, num_blocks, num_classes=10):
+    def __init__(self, block, num_blocks, num_classes=100):
         super(SmallerResNet, self).__init__()
         self.in_planes = 16
 
@@ -98,7 +98,7 @@ class SmallerResNet(nn.Module):
         return out
 
 class ResNet(nn.Module):
-    def __init__(self, block, num_blocks, num_classes=10):
+    def __init__(self, block, num_blocks, num_classes=100):
         super(ResNet, self).__init__()
         self.in_planes = 64
 

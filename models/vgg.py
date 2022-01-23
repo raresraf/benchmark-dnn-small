@@ -147,4 +147,4 @@ def vgg19_bn():
     return VGG(make_layers(cfg['E'], batch_norm=True))
 
 
-print(summary(VGG16_S().to(device='cuda'), (3, 32, 32)))
+# print(summary(VGG16_S().to(device='cuda'), (3, 32, 32)))

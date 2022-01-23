@@ -133,7 +133,7 @@ def VIT_S():
     return ViT(
         image_size = 32,
         patch_size = 4,
-        num_classes = 10,
+        num_classes = 100,
         dim = 192,
         depth = 4,
         heads = 8,
@@ -146,7 +146,7 @@ def VIT():
     return ViT(
         image_size = 32,
         patch_size = 4,
-        num_classes = 10,
+        num_classes = 100,
         dim = 512,
         depth = 6,
         heads = 8,
@@ -158,5 +158,5 @@ def VIT():
 def VIT_timm():
     import timm
     net = timm.create_model("vit_large_patch16_384", pretrained=True)
-    net.head = nn.Linear(net.head.in_features, 10)
+    net.head = nn.Linear(net.head.in_features, 100)
     return net
