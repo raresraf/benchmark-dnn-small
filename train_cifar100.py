@@ -17,7 +17,7 @@ ssl._create_default_https_context = ssl._create_unverified_context
 
 from models100.resnet import SmallerResNet18, ResNet18, ResNet34, ResNet50, ResNet101, ResNet152
 from models100.vgg import VGG16, VGG16_S
-from models100.vit import VIT_S
+from models100.vit import VIT_S, VIT
 from optimizers import parse_optimizer, supported_optimizers
 from sklearn.metrics import classification_report
 
@@ -26,7 +26,7 @@ def parse_args(argv=None):
     """Parse command line arguments"""
     parser = argparse.ArgumentParser(description='PyTorch CIFAR100 Training')
     parser.add_argument('--model', default='resnet18', type=str, help='model',
-                        choices=['resnet18', 'resnet18_s', 'vgg16', 'vgg16_s', 'vit_s'])
+                        choices=['resnet18', 'resnet18_s', 'vgg16', 'vgg16_s', 'vit', 'vit_s'])
     parser.add_argument('--optim', type=str, help='optimizer', required=True,
                         choices=supported_optimizers())
     parser.add_argument('--seed', type=int, default=42, help='Random seed to use. default=123.')
@@ -69,6 +69,7 @@ def build_model(model, device):
         'resnet18_s': SmallerResNet18,
         'vgg16': VGG16,
         'vgg16_s': VGG16_S,
+        'vit': VIT,
         'vit_s': VIT_S,
 
     }[model]()
